@@ -15,7 +15,7 @@ function Hero() {
                  Leverage AI to get instant, personalized feedback on your interview answers. Identify your weaknesses, build confidence, and land your dream job.
             </p>
 
-            <a href="#" className='px-8 py-4 text-white bg-indigo-600 rounded-lg font-bold text-lg transition-transform hover:bg-indigo-800 hover:scale-150' >
+            <a href="#" className='px-8 py-4 text-white bg-indigo-600 rounded-lg font-bold text-lg hover:bg-indigo-800 transition-transform  hover:scale-150' >
                 Try a Live demo ✨
             </a>
             

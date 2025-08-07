@@ -13,7 +13,7 @@ function Header() {
                 <a className='text-gray-600 hover:text-indigo-400 cursor-pointer'>Features</a>
             </div>
 
-            <a className='bg-indigo-500 text-white font-semibold px-5 py-2 hover:bg-indigo-700 rounded-lg cursor-pointer'>
+            <a href="#" className='bg-indigo-500 text-white font-semibold px-5 py-2 hover:bg-indigo-700 rounded-lg cursor-pointer transition-transform hover:scale-105'>
                 Get Started
             </a>
         </nav>
