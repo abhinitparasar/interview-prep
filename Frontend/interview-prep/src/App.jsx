@@ -1,9 +1,12 @@
-import Header from "./Components/Header"
+import {Header, Hero} from "./Components/index"
 
 function App() {
   return (
     <>
      <Header/>
+     <main>
+      <Hero/>
+     </main>
     </>
   )
 }
