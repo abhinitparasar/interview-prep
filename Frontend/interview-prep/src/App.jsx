@@ -1,4 +1,4 @@
-import {Header, Hero, HowItWorks} from "./Components/index"
+import {Header, Hero, HowItWorks, LiveDemo} from "./Components/index"
 
 function App() {
   return (
@@ -7,6 +7,7 @@ function App() {
      <main>
       <Hero/>
       <HowItWorks/>
+      <LiveDemo/>
      </main>
     </>
   )
