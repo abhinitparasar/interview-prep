@@ -27,7 +27,7 @@ async function getAiFeedback(userAnswer){
     
     }catch(error){
         console.error("error : ", error);
-        return "sorry unable process request";
+        return "sorry unable to process request";
     }
 }
 

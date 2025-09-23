@@ -3,13 +3,25 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const routerInterview = require("./Routes/interviewRoutes");
+const routerUser = require('./Routes/userRoutes');
 const cors = require('cors');
-require("./Services/geminiService");
- 
+const connectDB = require('./config/db');
+
+
 //middleware
+
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/interview",routerInterview);
+app.use("/api/interview", routerInterview);
+app.use("/api/users", routerUser);
 
-app.listen(3000,() => {console.log("connected successfully")});
+//first connect to db then start server
+connectDB()
+.then(() => {
+    app.listen(3000,() => {console.log("connected successfully")});
+})
+.catch((err) => {
+    console.error("Error : ", err);
+    process.exit(1);
+});
