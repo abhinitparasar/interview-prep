@@ -53,8 +53,27 @@ const registerUser = async(req, res) => {
     }
 }
 
-const loginUser = (req, res) => {
-    res.status(200).json({message : 'not yet implemented'});
+const loginUser = async (req, res) => {
+   
+    const {email, password} = req.body;
+    
+
+    //The shorthand ({ email }) works only when your variable name is the exact same as the field name in your schema.
+    //Else const user = await User.findOne({ email: email });
+    //The object you provide is a "query filter." Each key: value pair inside it corresponds to a field in your database and the value you want to match.
+    const user = await User.findOne({ email });
+
+    if(user && user.matchPass(password)){
+        res.json({
+            _id : user.id,
+            email : user.email,
+            name : user.name,
+            token : generatetoken(user._id)
+        });
+    }else{
+        //401 = Not logged in / Invalid authentication.
+        res.status(401).json({message : "invalid email or password"});
+    }
 }
 module.exports = {
     loginUser, registerUser
