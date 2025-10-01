@@ -31,8 +31,30 @@ const register = async(userData) => {
         return data;
 }
 
+const login = async(userData) => {
+    const response = await fetch(API_URL+'login',{
+        method:"POST",
+        headers :{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(userData)
+    });
+    const data = await response.json();
+    if(!response.ok){
+        throw new Error(data.message || "user does not exist");
+    }
+    localStorage.setItem("user",JSON.stringify(data));
+    return data;
+
+}
+
+const logout = () => {
+    localStorage.removeItem("user");
+}
 const authService = {
-    register
+    register,
+    login,
+    logout
 }
 
 export default authService

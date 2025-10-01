@@ -136,7 +136,7 @@ function Register() {
     } 
 
      if(isLoading){
-        return <div>Loading...</div>;
+        return <div className="text-3xl text-center font-semibold font-serif py-4 text-indigo-700">Loading...</div>;
     }
 
   return (

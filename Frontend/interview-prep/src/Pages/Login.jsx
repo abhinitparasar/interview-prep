@@ -1,10 +1,27 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { login, reset } from "../features/auth/authSlice";
 function Login() {
     const [formData, setFormData] = useState({
         email:"",
         password:""
     });
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const {user, isLoading, isError, message, isSuccess} = useSelector((state)=> state.auth);
+
+    useEffect(()=>{
+        if(isError){
+            alert(`Error : ${message}`)
+        }
+        if(isSuccess || user){
+            navigate("/");
+        }
+        dispatch(reset());
+    },[user, isSuccess, navigate, dispatch, isError, message])
 
     const {email, password} = formData;
 
@@ -17,6 +34,12 @@ function Login() {
 
     const onSubmit = async(e) => {
         e.preventDefault();
+        const userData = {email, password};
+        dispatch(login(userData));
+    }
+
+     if(isLoading){
+        return <div className="text-3xl text-center font-semibold font-serif py-4 text-indigo-700">Loading...</div>;
     }
 
     return (
@@ -30,7 +53,7 @@ function Login() {
             htmlFor="email"
             >Email</label>
             <input
-            className="border border-gray-400 w-full rounded-lg p-1"
+            className="border border-gray-400 w-full rounded-lg p-1 px-2"
             id="email"
             name="email"
             value={email}
@@ -44,7 +67,7 @@ function Login() {
             className="font-semibold font-serif text-xl"
             >Password</label>
             <input 
-            className="border border-gray-400 w-full rounded-lg p-1"
+            className="border border-gray-400 w-full rounded-lg p-1 px-2"
             type="password"
             onChange={onChange}
             value={password}
