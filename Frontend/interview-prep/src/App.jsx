@@ -1,5 +1,7 @@
 import {Header, Register, Login, Home} from "./Components/index"
 import{Route, Routes} from "react-router-dom"
+import Dashboard from "./Pages/Dashboard"
+import PrivateRoute from "./Components/PrivateRoute"
 
 function App() {
   return (
@@ -19,10 +21,19 @@ path: This is the URL path you want to match. For example, path="/login" will ma
 element: This is the React component you want to render when the path matches. You pass it as JSX (e.g., element={<Login />}).
 */}
      <Routes>
+      {/* public route */}
       <Route path="/" element={<Home/>}/>
       <Route path="/login" element={<Login/>}/>
       <Route path="/register" element={<Register/>}/>
-     </Routes>
+
+     {/* protected route -- nested route */}
+     <Route path="/dashboard" element={<PrivateRoute/>}>
+        <Route index element={<Dashboard/>}/>
+     </Route>
+     {/* Absolute paths (/path) in nested routes are almost always a mistake because they don't build upon the parent's path.
+      Use index for a child route that should render when the parent's URL is matched exactly.
+      Use relative paths (path) for child routes that should render at sub-paths (e.g., /parent/child). */}
+      </Routes>
      
     </>
     
