@@ -51,10 +51,28 @@ const login = async(userData) => {
 const logout = () => {
     localStorage.removeItem("user");
 }
+
+const getUserData = async(token) => {
+    const response = await fetch(API_URL+'get', {
+        method : 'GET',
+        headers : {
+            'Authorization' : `Bearer ${token}`,
+        }
+    })
+
+    const data = await response.json(); 
+
+    if(!response.ok){
+        throw new Error(data.message || "token verification failed");
+    }
+    return data;
+}
+
 const authService = {
     register,
     login,
-    logout
+    logout,
+    getUserData
 }
 
 export default authService
