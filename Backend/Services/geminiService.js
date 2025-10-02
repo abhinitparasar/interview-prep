@@ -4,7 +4,7 @@ const {GoogleGenerativeAI} = require("@google/generative-ai");
 const  genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function getAiFeedback(userAnswer){
-    try{
+    // try{
         const model = genAi.getGenerativeModel({model:'gemini-2.5-flash'});
         const prompt = `
       You are an expert interviewer for a software engineering role.
@@ -25,10 +25,11 @@ async function getAiFeedback(userAnswer){
     
     return response.text();
     
-    }catch(error){
-        console.error("error : ", error);
-        return "sorry unable to process request";
-    }
+    // }catch(error){
+    //     console.error("error : ", error);
+    //     return "sorry unable to process request";
+    // } 
+    //removed the try catch block because it will always send a valid return that means controller’s catch will never run for errors inside getAiFeedback because you are already handling them here. If you want the controller to handle it, you need to remove the try-catch from getAiFeedback or re-throw the error.
 }
 
 module.exports = {

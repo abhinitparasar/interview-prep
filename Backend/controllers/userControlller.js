@@ -63,7 +63,7 @@ const loginUser = async (req, res) => {
     //The object you provide is a "query filter." Each key: value pair inside it corresponds to a field in your database and the value you want to match.
     const user = await User.findOne({ email });
 
-    if(user && user.matchPass(password)){
+    if(user && await user.matchPass(password)){
         res.json({
             _id : user.id,
             email : user.email,
@@ -75,6 +75,11 @@ const loginUser = async (req, res) => {
         res.status(401).json({message : "invalid email or password"});
     }
 }
+
+const getMe = async (req, res) => {
+    // The `protect` middleware has already fetched the user and attached it to req.user
+    res.status(200).json(req.user);
+}
 module.exports = {
-    loginUser, registerUser
+    loginUser, registerUser, getMe
 }
