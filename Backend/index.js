@@ -13,7 +13,7 @@ const connectDB = require('./config/db');
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/interview", routerInterview);
+app.use("/api/interviews", routerInterview);
 app.use("/api/users", routerUser);
 
 //first connect to db then start server
