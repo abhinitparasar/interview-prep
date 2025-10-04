@@ -6,5 +6,6 @@ import LiveDemo from "./LiveDemo";
 import Register from "../Pages/Register"
 import Login from "../Pages/Login";
 import Home from "../Pages/Home";
+import Interview from "../Pages/Interview";
 
-export {Header , Hero, FeatureCard , HowItWorks, LiveDemo, Register, Login, Home};
+export {Header , Hero, FeatureCard , HowItWorks, LiveDemo, Register, Login, Home, Interview};

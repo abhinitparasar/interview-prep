@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import authService from '../features/auth/authService'; 
 import { useNavigate } from 'react-router-dom';
 import {getInterviews, reset} from '../features/interview/interviewSlice'
+import { Link } from 'react-router-dom';
 
 // we fetch the userData like name etc. from the backend using the jwt token of the loggedIn user.
 //we use the data to customize the dashboard for the particular user loggedIn
@@ -50,6 +51,9 @@ function Dashboard() {
         <section className='text-center mb-12'>
           <h1 className='text-4xl font-bold'>Welcome, {user && user.name}</h1>
           <p className='mt-2 text-lg text-gray-600'>Your Interview dashboard</p>
+          <Link to='/interview' className='mt-6 inline-block bg-indigo-600 text-white rounded-lg font-bold px-6 py-3 hover:bg-indigo-700'>
+            Start New Interview
+          </Link>
         </section>
 
         <section>

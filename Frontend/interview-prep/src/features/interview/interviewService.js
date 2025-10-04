@@ -16,8 +16,22 @@ const getInterviews = async(token)=>{
     return data;
 }
 
+const saveInterviews = async(interviewData, token) => {
+    const response = await fetch(API_URL , {
+        method: "POST",
+        headers: {
+            "Authorization" : `Bearer ${token}`,
+            "Content-Type" : "application/json"
+        },
+        body:JSON.stringify(interviewData),
+    })
+    const data = await response.json();
+    return data;
+}
+
 const interviewService = {
-    getInterviews
+    getInterviews,
+    saveInterviews
 }
 
 export default interviewService;

@@ -18,6 +18,15 @@ export const getInterviews = createAsyncThunk('interviews/getAll', async (_, thu
     }
 })
 
+export const saveInterviews = createAsyncThunk('interviews/create', async(interviewData, thunkAPI)=>{
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await interviewService.saveInterviews(interviewData, token);
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.message);
+    }
+})
+
 const interviewSlice = createSlice({
     name:'interview',
     initialState,
@@ -41,6 +50,19 @@ const interviewSlice = createSlice({
                 state.interviews = action.payload; 
             })
             .addCase(getInterviews.rejected, (state, action)=>{
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(saveInterviews.pending, (state, action) => {
+                state.isLoading = true;
+            })
+            .addCase(saveInterviews.fulfilled, (state, action)=>{
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.interviews.push(action.payload);
+            })
+            .addCase(saveInterviews.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
