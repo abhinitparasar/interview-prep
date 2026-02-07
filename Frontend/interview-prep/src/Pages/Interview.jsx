@@ -1,19 +1,17 @@
 import {useReducer, useState} from 'react'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { saveInterviews } from '../features/interview/interviewSlice';
 import { useNavigate } from 'react-router-dom';
-
-const questions =[
-  "Tell me about a time you faced a difficult challenge at work and how you handled it.",
-  "Describe a project you are particularly proud of. What was your role and what was the outcome?",
-  "How do you handle disagreements with a team member?",
-];
+import { useEffect } from 'react';
 
 function Interview() {
     const [userAnswer, setUserAnswer] = useState('');
     const [isLoadingFeedback, setLoadingFeedback] = useState(false);
     const [transcript, setTranscript] = useState([]);
     const [questionIndex, setQuestionIndex] = useState(0);
+    const { currentInterview } = useSelector((state) => state.interview);
+    const role = currentInterview.role;
+    const questions = currentInterview.questions;
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -51,18 +49,25 @@ function Interview() {
 
     const handleSaveInterview = async()=>{
         const interviewData = {
-            role:"software developer",
+            role:role,
             transcript:transcript,
         }
         dispatch(saveInterviews(interviewData));
         navigate("/dashboard");
     }
+
+    useEffect(()=>{
+        if(!questions || questions.length == 0){
+            navigate('/dashboard');
+        }
+    },[questions, navigate])
+
   return (
     <div className='container max-w-3xl py-12 px-6 mx-auto'>
         <h1 className='text-center font-serif font-semibold text-3xl mb-12'>Live Interview Practice</h1>
 
-        <div className='shadow-2xl rounded-lg shadow-indigo-500'>
-            <p className='mb-6 bg-gray-200 p-4 rounded-2xl'>{questions[questionIndex]}</p>
+        <div className=' rounded-lg '>
+            <p className='mb-2  bg-gray-200 p-4 rounded-2xl'>{questions[questionIndex]}</p>
             <form onSubmit={handleSubmitAnswer}>
                 <textarea
                 rows="8"

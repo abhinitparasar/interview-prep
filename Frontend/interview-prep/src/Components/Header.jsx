@@ -52,9 +52,9 @@ function Header() {
           
           {user && <button onClick={lgOut} className='bg-gray-400 px-5 py-2 text-white font-semibold rounded-lg hover:bg-gray-700 cursor-pointer'>Logout</button>}
 
-            <a href="#" className='bg-indigo-500 text-white font-semibold px-5 py-2 hover:bg-indigo-700 rounded-lg cursor-pointer transition-transform hover:scale-105'>
+            {!user && <a href="#" className='bg-indigo-500 text-white font-semibold px-5 py-2 hover:bg-indigo-700 rounded-lg cursor-pointer transition-transform hover:scale-105'>
                 Get Started
-            </a>
+            </a>}
         </nav>
       </header>
     </>

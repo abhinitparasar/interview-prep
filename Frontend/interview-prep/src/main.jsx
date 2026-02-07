@@ -42,11 +42,11 @@ The history object to programmatically navigate (e.g., history.push('/contact'))
 */
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
       <App/>
       </BrowserRouter>
     </Provider>
-  </StrictMode>
+   </StrictMode>
 )

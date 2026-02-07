@@ -1,5 +1,42 @@
 const {getAiFeedback} = require("../Services/geminiService");
 const Interview = require("../Models/interviewModel");
+const {GoogleGenerativeAI} = require("@google/generative-ai");
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const generateQuestions = async (req, res) => {
+    const { role } = req.body;
+
+    if(!role) {
+        return res.status(400).json({error : 'Role is required'});// 400 for bad request
+    }
+
+    try{
+        const model = genAI.getGenerativeModel({model: 'gemini-2.5-flash'});
+
+        const prompt = `
+        You are an expert technical interviewer.
+        Generate 3 challenging interview questions for a "${role}" role.
+        Return the response strictly as a JSON array of strings. 
+        Do not include markdown formatting like \`\`\`json.
+        Example: ["Question 1?", "Question 2?", "Question 3?"]`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let text = response.text();// text() function is shortcut or else we have to write like this manually -> response.candidates[0].content.parts[0].text.
+
+        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+        const questions = JSON.parse(text); //takes JSON string as arguement and convert it to javascript value
+        //its opposite is JSON.stringify 
+
+        res.status(200).json(questions);// res.json() internally converts javascript value to json string using JSON.stringify() ans also set the header as Content-Type : application/json
+
+    }catch (error){
+        console.error('Error generating questions : ', error);
+        res.status(500).json({error : 'Failed to generate questions'});
+    }
+}
 
 const postInterviewAnswer = async (req, res) => {
     try{
@@ -46,5 +83,6 @@ const saveInterview = async(req, res) =>{
 module.exports = {
     postInterviewAnswer,
     getInterview,
-    saveInterview
+    saveInterview,
+    generateQuestions
 }

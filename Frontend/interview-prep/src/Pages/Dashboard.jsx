@@ -1,9 +1,9 @@
 
-import { useEffect, useState } from 'react';
+import { isValidElement, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import authService from '../features/auth/authService'; 
 import { useNavigate } from 'react-router-dom';
-import {getInterviews, reset} from '../features/interview/interviewSlice'
+import {getInterviews, reset, generateQuestions} from '../features/interview/interviewSlice'
 import { Link } from 'react-router-dom';
 
 // we fetch the userData like name etc. from the backend using the jwt token of the loggedIn user.
@@ -27,7 +27,9 @@ function Dashboard() {
   //   fetchData();
   // }, [user, navigate]);
 
+  const [role, setRole] = useState('');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const {interviews, isLoading, isError, message} = useSelector((state)=>state.interview);
 
@@ -42,18 +44,48 @@ function Dashboard() {
     }
   },[dispatch])
   
-   if(isLoading){
-        return <div className="text-3xl text-center font-semibold font-serif py-4 text-indigo-700">Loading...</div>;
+  //  if(isLoading){
+  //       return <div className="text-3xl text-center font-semibold font-serif py-4 text-indigo-700">Loading...</div>;
+  //   }
+
+  const handleStartInterview = async(e)=>{
+    e.preventDefault();
+    if(!role) alert('Please Enter role');
+    
+    const result = await dispatch(generateQuestions(role));// result is the action object of the fulfilled or rejected state
+    
+    if(generateQuestions.fulfilled.match(result)){// return true if the type of result is fulfilled
+      navigate('/interview');
     }
+  }
 
   return (
     <div className='container mx-auto py-12 text-center'>
+
+    {/*Role selection area*/}
         <section className='text-center mb-12'>
           <h1 className='text-4xl font-bold'>Welcome, {user && user.name}</h1>
           <p className='mt-2 text-lg text-gray-600'>Your Interview dashboard</p>
-          <Link to='/interview' className='mt-6 inline-block bg-indigo-600 text-white rounded-lg font-bold px-6 py-3 hover:bg-indigo-700'>
-            Start New Interview
-          </Link>
+          <div className='max-w-md mx-auto mt-10 bg-white p-6 rounded-lg shadow-md'>
+            <h2 className='text-xl font-bold mb-4'>Start a New Mock Interview</h2>
+            <form onSubmit={handleStartInterview}>
+            <label className='block font-semibold text-gray-700 mb-2'>Target Job Role</label>
+            <input
+            type='text'
+            className=' w-full p-3 border rounded-2xl mb-4'
+            placeholder='e.g. Senior React Developer'
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            />
+            <button
+              type='submit'
+              className='w-full bg-indigo-600 text-white font-bold p-2 rounded-xl hover:bg-indigo-700 disabled:opacity-50'
+              disabled={isLoading}
+            >
+            {isLoading ? 'Generating Questions...' : 'Start Interview'}
+            </button>
+          </form>
+          </div>
         </section>
 
         <section>

@@ -18,7 +18,7 @@ function Login() {
             alert(`Error : ${message}`)
         }
         if(isSuccess || user){
-            navigate("/");
+            navigate("/dashboard");
         }
         dispatch(reset());
     },[user, isSuccess, navigate, dispatch, isError, message])

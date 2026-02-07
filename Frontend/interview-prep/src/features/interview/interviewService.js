@@ -29,9 +29,25 @@ const saveInterviews = async(interviewData, token) => {
     return data;
 }
 
+const generateQuestions = async(role, token) => {
+    const response = await fetch(API_URL+"/questions", {
+        method:'POST',// http method are case sensitive
+        headers:{
+            'Authorization': `Bearer ${token}`,// headers name are case insensitvie but values are case sensitive
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({role}),// if i dont wrap role inside object then at server side req.body.role == undefined
+    })
+
+     const data = await response.json()//Internally:Reads the response stream,Converts it to text,Runs JSON.parse(),Returns a JS value
+
+     return data;
+};
+
 const interviewService = {
     getInterviews,
-    saveInterviews
+    saveInterviews,
+    generateQuestions
 }
 
 export default interviewService;

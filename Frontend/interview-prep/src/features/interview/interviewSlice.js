@@ -3,12 +3,27 @@ import interviewService from "./interviewService";
 
 const initialState = {
     interviews : [],
+    currentInterview : {
+        role:'',
+        questions:[]
+    },
     isLoading : false,
     isSuccess : false,
     isError : false,
     message : ''
 }
+//generateQuestions
+export const generateQuestions = createAsyncThunk('interviews/questions', async(role, thunkAPI) => {
+    try{
+        const token = thunkAPI.getState().auth.user.token;
+        return await interviewService.generateQuestions(role, token);
+    }catch (error) {
+        const message = error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+})
 
+//getInterviews
 export const getInterviews = createAsyncThunk('interviews/getAll', async (_, thunkAPI)=>{
     try {
         const token = thunkAPI.getState().auth.user.token;//thunkAPI.getState() → gets the current Redux store state.
@@ -66,6 +81,20 @@ const interviewSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
+            })
+            .addCase(generateQuestions.pending, (state)=>{
+                state.isLoading = true;
+            })
+            .addCase(generateQuestions.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.currentInterview.questions = action.payload;
+                state.currentInterview.role = action.meta.arg; //createasyncthunk actions have following property type, payload, meta. arg is the argument passed during dispatch.
+            })
+            .addCase(generateQuestions.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload || action.error.message;
             })
     }
 })
