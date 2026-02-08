@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { saveInterviews } from '../features/interview/interviewSlice';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import useSpeechToText from '../hooks/useSpeechToText';
 
 function Interview() {
     const [userAnswer, setUserAnswer] = useState('');
@@ -12,6 +13,8 @@ function Interview() {
     const { currentInterview } = useSelector((state) => state.interview);
     const role = currentInterview.role;
     const questions = currentInterview.questions;
+
+    const { transcriptSp, startListening, stopListening, isListening, resetTranscript } = useSpeechToText();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -60,7 +63,9 @@ function Interview() {
         if(!questions || questions.length == 0){
             navigate('/dashboard');
         }
-    },[questions, navigate])
+        setUserAnswer(transcriptSp);
+        
+    },[questions, navigate, transcriptSp])
 
   return (
     <div className='container max-w-3xl py-12 px-6 mx-auto'>
@@ -69,14 +74,26 @@ function Interview() {
         <div className=' rounded-lg '>
             <p className='mb-2  bg-gray-200 p-4 rounded-2xl'>{questions[questionIndex]}</p>
             <form onSubmit={handleSubmitAnswer}>
-                <textarea
-                rows="8"
-                placeholder='Compose your answer'
-                value={userAnswer}
-                onChange={(e)=>setUserAnswer(e.target.value)}
-                className='rounded-lg w-full p-3 bg-white'
-                disabled={isLoadingFeedback || questionIndex === questions.length}
-                />
+                <div className='relative'>
+                    <textarea
+                    rows="8"
+                    placeholder='Compose your answer'
+                    value={userAnswer}
+                    onChange={(e)=>setUserAnswer(e.target.value)}
+                    className='rounded-lg w-full p-3 bg-white '
+                    disabled={isLoadingFeedback || questionIndex === questions.length}
+                    />
+                    <button
+                    type='button' // by default it is submit and it will submit the form 
+                    onClick={isListening? stopListening : startListening}
+                    title='Click to Speak'
+                    className={`absolute top-42 right-2 p-2 rounded-full transition-colors ${isListening ? 'bg-red-100 text-red-600 animate-pulse':'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                    </button>
+                </div>
                 <button
                 type='submit'
                 className='bg-indigo-700 w-full p-3 rounded-lg text-white font-semibold font-serif disabled:bg-gray-200 disabled:text-gray-500 cursor-pointer'
