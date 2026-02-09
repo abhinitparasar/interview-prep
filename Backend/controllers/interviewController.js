@@ -8,7 +8,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // @route   /api/interviews/report
 // @access  private
 const generateFeedbackReport = async(req, res) => {
-    
+
     const{transcript, role} = req.body;
 
     if(!transcript || !Array.isArray(transcript) || transcript.length === 0 || !role){
@@ -66,9 +66,9 @@ const generateQuestions = async (req, res) => {
 
         const prompt = `
         You are an expert technical interviewer.
-        Generate 3 challenging interview questions for a "${role}" role.
+        Generate 1 challenging interview questions for a "${role}" role.
         Return the response strictly as a JSON array of strings. 
-        Do not include markdown formatting like \`\`\`json.
+        Do; not include markdown formatting like \`\`\`json.
         Example: ["Question 1?", "Question 2?", "Question 3?"]`;
 
         const result = await model.generateContent(prompt);
@@ -115,8 +115,9 @@ const getInterview = async (req, res)=>{
     res.status(200).json(interviews);
 }
 
+//SAVE INTERVIEW
 const saveInterview = async(req, res) =>{
-    const {role, transcript} = req.body;
+    const {role, transcript, feedbackReport} = req.body;
 
     if(!role || !Array.isArray(transcript) || transcript.length === 0){//check for transcript array
         return res.status(400).json({message : "Please add all the fields and transcript must be a non-empty array"});
@@ -125,7 +126,8 @@ const saveInterview = async(req, res) =>{
     const interview = await Interview.create({
         user:req.user.id,
         role,
-        transcript
+        transcript,
+        feedbackReport
     });
 
     res.status(201).json(interview);//201 for resource created
