@@ -4,6 +4,56 @@ const {GoogleGenerativeAI} = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// @desc    comprehensive feedback report generation
+// @route   /api/interviews/report
+// @access  private
+const generateFeedbackReport = async(req, res) => {
+    
+    const{transcript, role} = req.body;
+
+    if(!transcript || !Array.isArray(transcript) || transcript.length === 0 || !role){
+        return res.status(400).json({error: 'transcript and role are required'})
+    }
+
+    try {
+        const model = genAI.getGenerativeModel({model:'gemini-2.5-flash'});
+
+        const prompt = `
+        You are a hiring manager for a ${role} position. 
+        Review the following interview transcript. 
+      
+        Transcript: ${JSON.stringify(transcript)}
+
+        Based on this, generate a "Hiring Report" in strict JSON format. 
+        The JSON must have these exact keys:
+        {
+            "overallScore": number (0-100),
+            "strengths": [array of strings],
+            "weaknesses": [array of strings],
+            "improvementPlan": "string (3-4 sentences)"
+        }
+        Do not add markdown formatting. Just the JSON object.
+        `;
+
+        const result = await model.generateContent(prompt);
+
+        const response = await result.response;
+
+        let text = response.text();
+        
+        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+        const report = JSON.parse(text);
+
+        res.status(200).json(report);
+
+    } catch (error) {
+        console.error('Error occured while generating report', error)
+        res.status(500).json({error:'Failed to generate report'})
+    }
+    
+}
+
 const generateQuestions = async (req, res) => {
     const { role } = req.body;
 
@@ -84,5 +134,6 @@ module.exports = {
     postInterviewAnswer,
     getInterview,
     saveInterview,
-    generateQuestions
+    generateQuestions,
+    generateFeedbackReport
 }

@@ -20,7 +20,13 @@ const interviewSchema = mongoose.Schema({
             answer:String,
             feedback:String
         }
-    ]
+    ],
+    feedbackReport: {
+        overallScore:{type:Number, default: 0},
+        strengths:[String],
+        weaknesses:[String],
+        improvementPlan: String
+    }
 },{
     timestamps : true,
 })
