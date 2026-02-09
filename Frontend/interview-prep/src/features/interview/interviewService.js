@@ -1,5 +1,20 @@
 const API_URL = 'http://localhost:3000/api/interviews';
 
+//generate comprehensive report
+const generateFeedbackReport = async(data, token) => {
+
+    const response = await fetch(API_URL+'/report', {
+        method:'POST',
+        headers:{
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+
+    return await response.json();
+}
+
 const getInterviews = async(token)=>{
     const response = await fetch(API_URL, {
         method: "GET",
@@ -47,7 +62,8 @@ const generateQuestions = async(role, token) => {
 const interviewService = {
     getInterviews,
     saveInterviews,
-    generateQuestions
+    generateQuestions,
+    generateFeedbackReport
 }
 
 export default interviewService;

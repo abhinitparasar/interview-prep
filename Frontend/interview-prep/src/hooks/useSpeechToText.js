@@ -16,7 +16,7 @@ const useSpeechToText = () => {
 
         const recognition = new SpeechRecognition();// constructor function 
 
-        recognition.continuous = false;// keep listening even if the users pauses briefly
+        recognition.continuous = true;// keep listening even if the users pauses briefly
         recognition.interimResults = true;// show result while the user is still talking
         recognition.lang = 'en-IN';// language setting
 

@@ -12,7 +12,19 @@ const initialState = {
     isError : false,
     message : ''
 }
-//generateQuestions
+
+//generate comprehensive report thunk
+export const generateFeedbackReport = createAsyncThunk('interview/generateReport', async(data , thunkAPI) =>{
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await interviewService.generateFeedbackReport(data, token);
+    } catch (error) {
+        const message = error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+})
+
+//generateQuestions thunk
 export const generateQuestions = createAsyncThunk('interviews/questions', async(role, thunkAPI) => {
     try{
         const token = thunkAPI.getState().auth.user.token;
@@ -96,6 +108,20 @@ const interviewSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload || action.error.message;
             })
+            .addCase(generateFeedbackReport.pending, (state) =>{
+                state.isLoading = true;
+            })
+            .addCase(generateFeedbackReport.fulfilled, (state, action) =>{
+                state.isLoading = false;
+                state.isSuccess = true;
+
+            })
+            .addCase(generateFeedbackReport.rejected, (state, action) =>{
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            
     }
 })
 

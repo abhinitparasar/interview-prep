@@ -1,6 +1,6 @@
 import {useReducer, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { saveInterviews } from '../features/interview/interviewSlice';
+import { saveInterviews, generateFeedbackReport } from '../features/interview/interviewSlice';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import useSpeechToText from '../hooks/useSpeechToText';
@@ -11,9 +11,12 @@ function Interview() {
     const [transcript, setTranscript] = useState([]);
     const [questionIndex, setQuestionIndex] = useState(0);
     const { currentInterview } = useSelector((state) => state.interview);
+    const [isGeneratingReport, setGeneratingReport] = useState(false);
+
     const role = currentInterview.role;
     const questions = currentInterview.questions;
 
+    //speech to text hook
     const { transcriptSp, startListening, stopListening, isListening, resetTranscript } = useSpeechToText();
 
     const dispatch = useDispatch();
@@ -21,8 +24,10 @@ function Interview() {
 
     const isLastQuestion = questionIndex === questions.length-1;
 
+    //handle submit answer func
     const handleSubmitAnswer = async(e) => {
         e.preventDefault();
+        stopListening();
         setLoadingFeedback(true);
 
         const currentQuestion = questions[questionIndex];
@@ -50,13 +55,33 @@ function Interview() {
         }
     }
 
+    //handle save interview
     const handleSaveInterview = async()=>{
-        const interviewData = {
-            role:role,
-            transcript:transcript,
+        setGeneratingReport(true);
+        try {
+            const reportResult = await dispatch(generateFeedbackReport({
+                transcript:transcript,
+                role: role
+            })).unwrap();//unwrap() :✅ returns the payload if the thunk is fulfilled ❌ throws an error if the thunk is rejected
+
+            //final data packet
+            const finalInterviewData= {
+                role : role,
+                transcript: transcript,
+                feedbackReport : reportResult
+            }
+            //save to database
+            await dispatch(saveInterviews(finalInterviewData)).unwrap();
+
+            navigate('/dashboard');
+
+        } catch (error) {
+            console.error("Failed to finish Interview", error);
+            alert("Something went wrong while generating report");
+        }finally{
+            setGeneratingReport(false);
         }
-        dispatch(saveInterviews(interviewData));
-        navigate("/dashboard");
+      
     }
 
     useEffect(()=>{
@@ -105,7 +130,7 @@ function Interview() {
             type='submit'
             onClick={handleSaveInterview}
             className='w-full text-center bg-indigo-700 mt-2 p-3 rounded-lg font-semibold text-white font-serif cursor-pointer'>
-                Save Interview
+                {isGeneratingReport?'Generating Hiring Report':'Finish & View Report'}
             </button>}
         </div>
       
