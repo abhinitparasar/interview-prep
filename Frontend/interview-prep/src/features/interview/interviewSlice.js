@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import interviewService from "./interviewService";
+import { act } from "react";
 
 const initialState = {
     interviews : [],
@@ -12,6 +13,18 @@ const initialState = {
     isError : false,
     message : ''
 }
+
+// getInterviewById thunk
+
+export const getInterviewById = createAsyncThunk('interviews/getOne', async(id, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await interviewService.getInterviewById(id, token);
+    } catch (error) {
+        const message = error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+})
 
 //generate comprehensive report thunk
 export const generateFeedbackReport = createAsyncThunk('interview/generateReport', async(data , thunkAPI) =>{
@@ -117,6 +130,19 @@ const interviewSlice = createSlice({
 
             })
             .addCase(generateFeedbackReport.rejected, (state, action) =>{
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(getInterviewById.pending, (state, action) => {
+                state.isLoading = true;
+            })
+            .addCase(getInterviewById.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.currentInterview = action.payload;
+            })
+            .addCase(getInterviewById.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

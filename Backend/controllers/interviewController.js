@@ -4,6 +4,29 @@ const {GoogleGenerativeAI} = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// @desc    get single interview
+// @route   GET /api/interviews/:id
+// @access  private
+const getInterviewById = async(req, res) => {
+    try {
+        const interview = await Interview.findById(req.params.id);// findById cast string to ObjectID type
+
+        if(!interview) {
+            return res.status(404).json({message : 'Interview not found'});// 404 not found
+        }
+
+        //security check: ensure the interview belongs to the user logged-in
+        if(interview.user.toString() !== req.user.id){// _id is the actual MongoDB ObjectId stored in the database, while id is a Mongoose virtual getter that returns _id as a string for convenience.
+            return res.status(401).json({message : 'User not authorized'});// 401 unauthorized
+        }
+
+        res.status(200).json(interview);//200 OK — The request was successful and the server returned the expected response.
+    } catch (error) {
+        console.error("Error occured in getInterviewById :", error);
+        res.status(500).json({error : error.message})
+    }
+}
+
 // @desc    comprehensive feedback report generation
 // @route   /api/interviews/report
 // @access  private
@@ -137,5 +160,6 @@ module.exports = {
     getInterview,
     saveInterview,
     generateQuestions,
-    generateFeedbackReport
+    generateFeedbackReport,
+    getInterviewById
 }

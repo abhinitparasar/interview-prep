@@ -95,13 +95,20 @@ function Dashboard() {
             {interviews.map((interview)=>(//map() is an array method that creates a new array by transforming each element.map() returns a new array of JSX elements, which React can render.
             //forEach() → returns undefined, so React has nothing to render.
             //React requires a unique key prop when rendering lists.It is required for React to efficiently update the DOM.
-              <div key={interview._id} className='bg-white p-4 rounded-lg shadow'>
-                <p>Role:{interview.role}</p>
-                <p>Date:{new Date(interview.createdAt).toLocaleDateString()}</p>
+              <Link to={`/interview/${interview._id}`} key={interview._id}>
+                <div className='bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow border border-gray-100 flex justify-between items-center mb-2 max-w-4xl mx-auto '>
+                <div>
+                    <p className='font-bold text-lg text-gray-800'>Role:{interview.role}</p>
+                    <p className='text-gray-500 text-sm'>Date:{new Date(interview.createdAt).toLocaleDateString()}</p>
                 {/* createdAt is an ISO 8601 string, representing a date and time in UTC.
                 #new Date(string) converts a string (or timestamp) into a JavaScript Date object.
                 #.toLocaleDateString() converts the Date object to a human-readable string in the local timezone.It automatically formats the date according to the user’s locale settings (language and region). */}
+                </div>
+                <div className='text-indigo-600 font-semibold'>
+                  View Report &rarr;
+                </div>
               </div>
+              </Link>
             ))}
           </div>:<p>No past interview</p>}
         </section>

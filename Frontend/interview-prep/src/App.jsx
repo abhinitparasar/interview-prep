@@ -2,6 +2,7 @@ import {Header, Register, Login, Home, Interview} from "./Components/index"
 import{Route, Routes} from "react-router-dom"
 import Dashboard from "./Pages/Dashboard"
 import PrivateRoute from "./Components/PrivateRoute"
+import InterviewDetails from "./Pages/InterviewDetails"
 
 function App() {
   return (
@@ -36,6 +37,11 @@ element: This is the React component you want to render when the path matches. Y
       <Route path="/interview" element={<PrivateRoute/>}>
         <Route index element={<Interview/>}/>
       </Route>
+
+      <Route path="/interview/:id" element={<PrivateRoute/>}>
+        <Route index element={<InterviewDetails />}/>
+      </Route>
+
       </Routes>
      
     </>

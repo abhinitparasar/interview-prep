@@ -1,5 +1,23 @@
 const API_URL = 'http://localhost:3000/api/interviews';
 
+//get Interviews by Id
+const getInterviewById = async(InterviewId, token) => {
+    console.log(InterviewId)
+    const response = await fetch(API_URL+"/"+InterviewId, {
+        method:"GET",// not need by writing method in case of get its by default get
+        headers:{
+            "Authorization": `Bearer ${token}`
+        }
+    })
+
+    if(!response.ok){
+        const errorData = await response.json();
+        throw new Error(errorData.message || errorData.error || "something went wrong");
+    }
+
+    return await response.json();
+}
+
 //generate comprehensive report
 const generateFeedbackReport = async(data, token) => {
 
@@ -63,7 +81,8 @@ const interviewService = {
     getInterviews,
     saveInterviews,
     generateQuestions,
-    generateFeedbackReport
+    generateFeedbackReport,
+    getInterviewById
 }
 
 export default interviewService;
