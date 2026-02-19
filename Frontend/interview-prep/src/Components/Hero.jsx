@@ -1,6 +1,9 @@
 import React from 'react'
 
 function Hero() {
+    const handleClick = ()=>{
+        document.getElementById("live-demo")?.scrollIntoView({behavior:'smooth'})
+    }
   return (
     <section className='py-20 bg-white'>
         <div className='container mx-auto py-6 text-center'>
@@ -15,7 +18,7 @@ function Hero() {
                  Leverage AI to get instant, personalized feedback on your interview answers. Identify your weaknesses, build confidence, and land your dream job.
             </p>
 
-            <a href="#" className='px-8 py-4 text-white bg-indigo-600 rounded-lg font-bold text-lg hover:bg-indigo-800 transition-transform  hover:scale-150' >
+            <a href='#live-demo' className='px-8 py-4 text-white bg-indigo-600 rounded-lg font-bold text-lg hover:bg-indigo-800 transition-transform  hover:scale-105' >
                 Try a Live demo ✨
             </a>
             

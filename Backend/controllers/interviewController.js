@@ -1,8 +1,53 @@
 const {getAiFeedback} = require("../Services/geminiService");
 const Interview = require("../Models/interviewModel");
 const {GoogleGenerativeAI} = require("@google/generative-ai");
+const pdfParse = require('pdf-parse');//does not work properly with CommonJs module therefore used older version 
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+//@desc     generate question based on role and resume
+//@route    POST /api/interviews/questions-with-resume
+//acess     Private
+const generateQuestionsFromResume = async (req, res) => {
+    const {role} = req.body;
+    const file = req.file;// multer stores the file content in buffer in binary form and attach the file object to req
+
+    try {
+        const pdfData = await pdfParse(file.buffer);// read from the buffer in RAM
+        const resumeText = pdfData.text;
+
+        const model = genAI.getGenerativeModel({model :'gemini-2.5-flash'});
+
+        const prompt = `
+      You are an expert technical interviewer.
+      
+      I have a candidate applying for the role of: "${role}".
+      
+      Here is their resume text:
+      "${resumeText}"
+
+      Based strictly on their resume experience and the target role, generate 3 specific, challenging interview questions. 
+      For example, if they mention a specific technology in their resume, ask about that.
+      
+      Return the response strictly as a JSON array of strings. 
+      Do not include markdown formatting.
+      Example: ["Question 1?", "Question 2?", "Question 3?"]
+    `;
+        
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let text = response.text();
+
+        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+        const questions = JSON.parse(text);
+
+        res.status(200).json(questions);
+    } catch (error) {
+        console.error('Error processing resume:', error);
+        res.status(500).json({error: 'Failed to process resume'});
+    }
+}
 
 // @desc    get single interview
 // @route   GET /api/interviews/:id
@@ -161,5 +206,6 @@ module.exports = {
     saveInterview,
     generateQuestions,
     generateFeedbackReport,
-    getInterviewById
+    getInterviewById,
+    generateQuestionsFromResume
 }

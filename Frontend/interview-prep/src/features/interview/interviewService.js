@@ -1,8 +1,23 @@
 const API_URL = 'http://localhost:3000/api/interviews';
 
+//generate interview questions from resume and role
+const generateQuestionsWithResume = async(formData, token) => {
+    const response = await fetch(API_URL+'/questions-with-resume', {
+        method:'POST',
+        headers:{
+            'Authorization': `Bearer ${token}`//if using FormData, do not use Content-Type browser automatically sets the correct content-type with boundaries
+        },
+        body:formData,//passing form object directly
+    })
+
+    const data = await response.json();
+    if(!response.ok) throw new Error(data.error || data.message || "Failed to generate");
+    return data;
+} 
+
 //get Interviews by Id
 const getInterviewById = async(InterviewId, token) => {
-    console.log(InterviewId)
+   
     const response = await fetch(API_URL+"/"+InterviewId, {
         method:"GET",// not need by writing method in case of get its by default get
         headers:{
@@ -82,7 +97,8 @@ const interviewService = {
     saveInterviews,
     generateQuestions,
     generateFeedbackReport,
-    getInterviewById
+    getInterviewById,
+    generateQuestionsWithResume
 }
 
 export default interviewService;

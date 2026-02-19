@@ -1,9 +1,9 @@
 
-import { isValidElement, useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import authService from '../features/auth/authService'; 
 import { useNavigate } from 'react-router-dom';
-import {getInterviews, reset, generateQuestions} from '../features/interview/interviewSlice'
+import {getInterviews, reset, generateQuestions, generateQuestionsWithResume} from '../features/interview/interviewSlice'
 import { Link } from 'react-router-dom';
 
 // we fetch the userData like name etc. from the backend using the jwt token of the loggedIn user.
@@ -28,6 +28,7 @@ function Dashboard() {
   // }, [user, navigate]);
 
   const [role, setRole] = useState('');
+  const [resume, setResume] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
@@ -51,11 +52,30 @@ function Dashboard() {
   const handleStartInterview = async(e)=>{
     e.preventDefault();
     if(!role) alert('Please Enter role');
-    
-    const result = await dispatch(generateQuestions(role));// result is the action object of the fulfilled or rejected state
+
+    let result;
+
+    if(resume){
+
+      if(resume.type != 'application/pdf') {
+        alert("only pdf files are allowed")
+        return
+      }
+      
+      const formData = new FormData();//set content type as multipart/form-data and set boundaries.It mimics enctype= multipart/formData like in Html form.It is a webAPI.
+      formData.append('role', role);
+      formData.append('resume', resume); // 'resume' must match the backend upload.single('resume')
+
+      result = await dispatch(generateQuestionsWithResume(formData));
+      console.log(result);
+    }else result = await dispatch(generateQuestions(role));// result is the action object of the fulfilled or rejected state
     
     if(generateQuestions.fulfilled.match(result)){// return true if the type of result is fulfilled
       navigate('/interview');
+    }
+
+    if(result.type.endsWith('/fulfilled')){
+      navigate('/interview')
     }
   }
 
@@ -77,6 +97,18 @@ function Dashboard() {
             value={role}
             onChange={(e) => setRole(e.target.value)}
             />
+
+            {/*Resume upload */}
+            <div className='mb-3'>
+              <label className='block text-gray-700 mb-2 font-medium'>Upload Resume (PDF) <span className='text-gray-400 text-sm font-normal'>(Optional)</span></label>
+              <input
+              type='file'
+              className='w-full text-sm text-gray-500 file:bg-indigo-50 file:text-indigo-700 file:font-semibold file:px-4 file:py-2 file: rounded-full file:mr-4 file: border-0 file:cursor-pointer'//when we do file: it apply style only to the file button part
+              accept='application/pdf'
+              onChange={(e)=> setResume(e.target.files[0])}//It returns the first File object selected in the file input. The File object contains metadata like name, size, type, and lastModified, and can be appended to FormData for uploading.
+              />
+              <p className='text-xs text-gray-500 mt-2'>Upload your resume to get personalized questions based on your experience.</p>
+            </div>
             <button
               type='submit'
               className='w-full bg-indigo-600 text-white font-bold p-2 rounded-xl hover:bg-indigo-700 disabled:opacity-50'

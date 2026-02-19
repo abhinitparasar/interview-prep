@@ -35,7 +35,7 @@ function LiveDemo() {
     }
     
   return (
-    <section className='py-6 bg-white'>
+    <section id='live-demo'  className='py-6 bg-white'>
         <div className='container mx-auto px-6'>
             <div className='text-center mb-12'>
                 <h2 className='text-3xl md:text-4xl font-bold text-gray-900'>Try IntelliPrep AI Right Now ✨</h2>

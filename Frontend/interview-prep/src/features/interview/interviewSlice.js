@@ -14,6 +14,18 @@ const initialState = {
     message : ''
 }
 
+// generateQuestionsWithResume thunk
+
+export const generateQuestionsWithResume = createAsyncThunk('interview/generateQuestionsWithResume',async(formData, thunkAPI)=>{
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await interviewService.generateQuestionsWithResume(formData, token);
+    } catch (error) {
+        const message = error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+})
+
 // getInterviewById thunk
 
 export const getInterviewById = createAsyncThunk('interviews/getOne', async(id, thunkAPI) => {
@@ -143,6 +155,20 @@ const interviewSlice = createSlice({
                 state.currentInterview = action.payload;
             })
             .addCase(getInterviewById.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(generateQuestionsWithResume.pending, (state, action) => {
+                state.isLoading = true;
+            })
+            .addCase(generateQuestionsWithResume.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.currentInterview.questions = action.payload;
+                state.currentInterview.role = "Resume Based Interview"
+            })
+            .addCase(generateQuestionsWithResume.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
